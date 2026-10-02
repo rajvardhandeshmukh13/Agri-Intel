@@ -32,6 +32,12 @@ export interface SellRecommendation {
   reasons: string[]; // 3–5 human-readable explanation strings
   scenarios: [Scenario, Scenario, Scenario]; // [now, 7d, 14d]
   source: 'decision-engine' | 'demo';
+  yieldSource?: 'ml' | 'ml-service' | 'fallback' | 'demo';
+  expectedYieldQPerHa?: number;
+  totalHarvestQ?: number;
+  yieldConfidenceLow?: number;
+  yieldConfidenceHigh?: number;
+  yieldExplanation?: import('./yield').YieldExplanationFactor[];
 }
 
 export interface ProfitSimulatorInput {

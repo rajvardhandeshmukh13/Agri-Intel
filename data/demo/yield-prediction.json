@@ -1,0 +1,60 @@
+{
+  "farmSeasonId": "demo-season-kharif-2024",
+  "predictedAt": "2024-10-01T07:00:00+05:30",
+  "modelVersion": "v1",
+  "expectedYieldQPerHa": 19.5,
+  "totalHarvestQ": 68.25,
+  "confidenceLow": 16.2,
+  "confidenceHigh": 22.8,
+  "source": "demo",
+  "explanation": [
+    {
+      "factor": "Historical yield data",
+      "value": "Avg 18.2 qtl/ha in Latur (last 5 years)",
+      "impactDirection": "positive",
+      "impactMagnitude": "high"
+    },
+    {
+      "factor": "Weather conditions",
+      "value": "580 mm total rainfall — near average",
+      "impactDirection": "positive",
+      "impactMagnitude": "medium"
+    },
+    {
+      "factor": "Crop health (NDVI)",
+      "value": "Peak NDVI 0.78 — good vegetation",
+      "impactDirection": "positive",
+      "impactMagnitude": "medium"
+    },
+    {
+      "factor": "Late rainfall stress",
+      "value": "Heavy rain forecast near harvest",
+      "impactDirection": "negative",
+      "impactMagnitude": "low"
+    },
+    {
+      "factor": "Soil type",
+      "value": "Black soil — suitable for soybean",
+      "impactDirection": "positive",
+      "impactMagnitude": "low"
+    }
+  ],
+  "inputSnapshot": {
+    "modelVersion": "v1",
+    "crop": "soybean",
+    "state": "Maharashtra",
+    "district": "Latur",
+    "season": "kharif",
+    "sowingDate": "2024-06-20",
+    "areaHectares": 3.5,
+    "soilType": "black",
+    "irrigationType": "rainfed",
+    "avgTempC": 28.4,
+    "totalRainfallMm": 580,
+    "avgHumidityPct": 74,
+    "rainyDaysCount": 42,
+    "latestNdvi": 0.62,
+    "avgNdvi": 0.59,
+    "historicalAvgYieldQPerHa": 18.2
+  }
+}

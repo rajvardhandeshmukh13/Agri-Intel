@@ -12,7 +12,7 @@ export interface MarketRecord {
   maxPricePerQuintal: number;
   modalPricePerQuintal: number;
   arrivalsQuintals?: number;
-  source: 'agmarknet' | 'demo';
+  source: 'agmarknet' | 'live' | 'demo';
 }
 
 export interface MandiInfo {
@@ -47,4 +47,5 @@ export interface MarketAnalysis {
   trend: PriceTrend;
   priceHistory: MarketRecord[]; // last 30 days
   nearbyMandis: MandiComparison[];
+  source?: 'agmarknet' | 'live' | 'demo';
 }

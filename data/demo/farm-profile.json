@@ -1,0 +1,35 @@
+{
+  "farm": {
+    "id": "demo-soybean-maharashtra",
+    "userId": "demo-user-001",
+    "name": "Patil Farm",
+    "state": "Maharashtra",
+    "district": "Latur",
+    "village": "Ausa",
+    "lat": 18.2333,
+    "lng": 76.7167,
+    "areaHectares": 3.5,
+    "fieldGeoJson": {
+      "type": "Polygon",
+      "coordinates": [[
+        [76.7145, 18.2312],
+        [76.7189, 18.2312],
+        [76.7189, 18.2354],
+        [76.7145, 18.2354],
+        [76.7145, 18.2312]
+      ]]
+    }
+  },
+  "season": {
+    "id": "demo-season-kharif-2024",
+    "farmId": "demo-soybean-maharashtra",
+    "crop": "soybean",
+    "season": "kharif_2024",
+    "sowingDate": "2024-06-20",
+    "expectedHarvestDate": "2024-10-15",
+    "areaHectares": 3.5,
+    "soilType": "black",
+    "irrigationType": "rainfed",
+    "inputCostPerHa": 18000
+  }
+}

@@ -1,0 +1,64 @@
+{
+  "farmSeasonId": "demo-season-kharif-2024",
+  "generatedAt": "2024-10-01T07:00:00+05:30",
+  "recommendedWindow": "7_days",
+  "suggestedMandi": "Sangli",
+  "estimatedNetRealization": 256840,
+  "riskLevel": "moderate",
+  "confidence": "moderate",
+  "source": "demo",
+  "reasons": [
+    "Soybean prices have risen 6.7% over the past 30 days and momentum is positive",
+    "Arrivals at major mandis are still low — prices tend to soften as harvest arrivals peak",
+    "Heavy rain forecast on Oct 5–6 may delay harvesting — waiting past rain is advisable",
+    "Sangli mandi offers the highest estimated net after transport (₹4,340/qtl modal price)",
+    "Selling in 7 days allows rain to pass and prices to potentially strengthen further"
+  ],
+  "scenarios": [
+    {
+      "window": "now",
+      "label": "Sell Now",
+      "mandi": "Sangli",
+      "estimatedModalPricePerQuintal": 4340,
+      "estimatedGross": 296115,
+      "transportCostTotal": 8212,
+      "sellingCostTotal": 14806,
+      "farmCostTotal": 63000,
+      "estimatedNet": 210097,
+      "riskLevel": "low",
+      "confidence": "high",
+      "weatherRisk": "moderate",
+      "priceRiskPct": 3
+    },
+    {
+      "window": "7_days",
+      "label": "Wait ~7 Days",
+      "mandi": "Sangli",
+      "estimatedModalPricePerQuintal": 4510,
+      "estimatedGross": 307718,
+      "transportCostTotal": 8212,
+      "sellingCostTotal": 15386,
+      "farmCostTotal": 63000,
+      "estimatedNet": 221120,
+      "riskLevel": "moderate",
+      "confidence": "moderate",
+      "weatherRisk": "low",
+      "priceRiskPct": 8
+    },
+    {
+      "window": "14_days",
+      "label": "Wait ~14 Days",
+      "mandi": "Sangli",
+      "estimatedModalPricePerQuintal": 4620,
+      "estimatedGross": 315225,
+      "transportCostTotal": 8212,
+      "sellingCostTotal": 15761,
+      "farmCostTotal": 63000,
+      "estimatedNet": 228252,
+      "riskLevel": "high",
+      "confidence": "low",
+      "weatherRisk": "low",
+      "priceRiskPct": 18
+    }
+  ]
+}

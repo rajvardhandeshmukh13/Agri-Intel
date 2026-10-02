@@ -1,0 +1,77 @@
+{
+  "farmId": "demo-soybean-maharashtra",
+  "latestNdvi": 0.62,
+  "latestStatus": "moderate",
+  "trend": "stable",
+  "healthyPct": 55,
+  "moderatePct": 35,
+  "stressedPct": 10,
+  "lastObservedAt": "2024-09-28T10:30:00+05:30",
+  "source": "demo",
+  "readings": [
+    {
+      "farmId": "demo-soybean-maharashtra",
+      "observedAt": "2024-09-28T10:30:00+05:30",
+      "ndvi": 0.62,
+      "healthStatus": "moderate",
+      "cloudCoverPct": 15,
+      "source": "demo"
+    },
+    {
+      "farmId": "demo-soybean-maharashtra",
+      "observedAt": "2024-09-14T10:15:00+05:30",
+      "ndvi": 0.68,
+      "healthStatus": "moderate",
+      "cloudCoverPct": 10,
+      "source": "demo"
+    },
+    {
+      "farmId": "demo-soybean-maharashtra",
+      "observedAt": "2024-08-31T10:00:00+05:30",
+      "ndvi": 0.71,
+      "healthStatus": "healthy",
+      "cloudCoverPct": 20,
+      "source": "demo"
+    },
+    {
+      "farmId": "demo-soybean-maharashtra",
+      "observedAt": "2024-08-17T10:20:00+05:30",
+      "ndvi": 0.75,
+      "healthStatus": "healthy",
+      "cloudCoverPct": 8,
+      "source": "demo"
+    },
+    {
+      "farmId": "demo-soybean-maharashtra",
+      "observedAt": "2024-08-03T10:10:00+05:30",
+      "ndvi": 0.78,
+      "healthStatus": "healthy",
+      "cloudCoverPct": 5,
+      "source": "demo"
+    },
+    {
+      "farmId": "demo-soybean-maharashtra",
+      "observedAt": "2024-07-20T09:55:00+05:30",
+      "ndvi": 0.52,
+      "healthStatus": "moderate",
+      "cloudCoverPct": 30,
+      "source": "demo"
+    },
+    {
+      "farmId": "demo-soybean-maharashtra",
+      "observedAt": "2024-07-06T10:05:00+05:30",
+      "ndvi": 0.35,
+      "healthStatus": "moderate",
+      "cloudCoverPct": 25,
+      "source": "demo"
+    },
+    {
+      "farmId": "demo-soybean-maharashtra",
+      "observedAt": "2024-06-22T09:45:00+05:30",
+      "ndvi": 0.18,
+      "healthStatus": "stressed",
+      "cloudCoverPct": 40,
+      "source": "demo"
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  ml-service:
+    build:
+      context: ./ml-service
+      dockerfile: Dockerfile
+    container_name: agriintel-ml-service
+    ports:
+      - "8000:8000"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: agriintel-web
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - ML_SERVICE_URL=http://ml-service:8000
+    depends_on:
+      ml-service:
+        condition: service_healthy
+    restart: unless-stopped

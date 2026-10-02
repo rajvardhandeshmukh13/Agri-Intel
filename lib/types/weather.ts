@@ -16,6 +16,7 @@ export interface WeatherForecast {
   farmId: string;
   generatedAt: string;
   days: WeatherDay[];
+  source?: 'live' | 'open-meteo' | 'demo';
 }
 
 export interface WeatherDay {
@@ -48,6 +49,7 @@ export interface WeatherSummary {
   extremeAlerts: string[];
   weatherCode: WeatherCode;
   description: string;
+  source?: 'live' | 'open-meteo' | 'demo';
 }
 
 export interface WeatherRisk {

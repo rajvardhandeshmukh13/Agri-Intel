@@ -1,0 +1,146 @@
+{
+  "farmId": "demo-soybean-maharashtra",
+  "generatedAt": "2024-10-01T06:00:00+05:30",
+  "days": [
+    {
+      "date": "2024-10-01",
+      "tempMaxC": 31.2,
+      "tempMinC": 22.4,
+      "rainfallMm": 0,
+      "humidityPct": 68,
+      "weatherCode": "partly_cloudy",
+      "description": "Partly cloudy, dry",
+      "isExtremeRisk": false
+    },
+    {
+      "date": "2024-10-02",
+      "tempMaxC": 30.8,
+      "tempMinC": 22.1,
+      "rainfallMm": 0,
+      "humidityPct": 65,
+      "weatherCode": "partly_cloudy",
+      "description": "Partly cloudy",
+      "isExtremeRisk": false
+    },
+    {
+      "date": "2024-10-03",
+      "tempMaxC": 29.5,
+      "tempMinC": 21.8,
+      "rainfallMm": 4.2,
+      "humidityPct": 78,
+      "weatherCode": "drizzle",
+      "description": "Light drizzle expected",
+      "isExtremeRisk": false
+    },
+    {
+      "date": "2024-10-04",
+      "tempMaxC": 28.2,
+      "tempMinC": 21.0,
+      "rainfallMm": 12.8,
+      "humidityPct": 85,
+      "weatherCode": "rain",
+      "description": "Moderate rain expected",
+      "isExtremeRisk": false
+    },
+    {
+      "date": "2024-10-05",
+      "tempMaxC": 27.5,
+      "tempMinC": 20.5,
+      "rainfallMm": 22.4,
+      "humidityPct": 90,
+      "weatherCode": "heavy_rain",
+      "description": "Heavy rain — harvest delay risk",
+      "isExtremeRisk": true
+    },
+    {
+      "date": "2024-10-06",
+      "tempMaxC": 27.0,
+      "tempMinC": 20.2,
+      "rainfallMm": 18.6,
+      "humidityPct": 88,
+      "weatherCode": "heavy_rain",
+      "description": "Heavy rain continues",
+      "isExtremeRisk": true
+    },
+    {
+      "date": "2024-10-07",
+      "tempMaxC": 28.8,
+      "tempMinC": 21.3,
+      "rainfallMm": 6.0,
+      "humidityPct": 82,
+      "weatherCode": "rain",
+      "description": "Reducing rain",
+      "isExtremeRisk": false
+    },
+    {
+      "date": "2024-10-08",
+      "tempMaxC": 30.0,
+      "tempMinC": 21.8,
+      "rainfallMm": 0,
+      "humidityPct": 74,
+      "weatherCode": "cloudy",
+      "description": "Cloudy, dry",
+      "isExtremeRisk": false
+    },
+    {
+      "date": "2024-10-09",
+      "tempMaxC": 31.0,
+      "tempMinC": 22.0,
+      "rainfallMm": 0,
+      "humidityPct": 70,
+      "weatherCode": "partly_cloudy",
+      "description": "Partly cloudy",
+      "isExtremeRisk": false
+    },
+    {
+      "date": "2024-10-10",
+      "tempMaxC": 31.5,
+      "tempMinC": 22.5,
+      "rainfallMm": 0,
+      "humidityPct": 67,
+      "weatherCode": "sunny",
+      "description": "Sunny and warm",
+      "isExtremeRisk": false
+    },
+    {
+      "date": "2024-10-11",
+      "tempMaxC": 32.0,
+      "tempMinC": 23.0,
+      "rainfallMm": 0,
+      "humidityPct": 65,
+      "weatherCode": "sunny",
+      "description": "Sunny",
+      "isExtremeRisk": false
+    },
+    {
+      "date": "2024-10-12",
+      "tempMaxC": 32.5,
+      "tempMinC": 23.2,
+      "rainfallMm": 0,
+      "humidityPct": 63,
+      "weatherCode": "sunny",
+      "description": "Clear and sunny",
+      "isExtremeRisk": false
+    },
+    {
+      "date": "2024-10-13",
+      "tempMaxC": 32.2,
+      "tempMinC": 23.0,
+      "rainfallMm": 0,
+      "humidityPct": 62,
+      "weatherCode": "sunny",
+      "description": "Good harvest conditions",
+      "isExtremeRisk": false
+    },
+    {
+      "date": "2024-10-14",
+      "tempMaxC": 31.8,
+      "tempMinC": 22.8,
+      "rainfallMm": 0,
+      "humidityPct": 61,
+      "weatherCode": "partly_cloudy",
+      "description": "Partly cloudy, favorable",
+      "isExtremeRisk": false
+    }
+  ]
+}

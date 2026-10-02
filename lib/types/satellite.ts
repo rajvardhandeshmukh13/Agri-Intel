@@ -10,12 +10,22 @@ export interface NDVIReading {
   healthStatus: HealthStatus;
   cloudCoverPct: number;
   imageUrl?: string;
-  source: 'sentinel-hub' | 'nasa-earthdata' | 'demo';
+  source: 'sentinel-hub' | 'nasa-earthdata' | 'live' | 'demo';
+}
+
+export interface HealthZone {
+  status: HealthStatus;
+  label?: string;
+  polygon: [number, number][]; // [lat, lng] pairs for Leaflet
+  areaPct?: number; // percentage of total field area
+  color?: string; // hex color for visualization
+  description?: string;
 }
 
 export interface SatelliteHealth {
   farmId: string;
   latestNdvi: number;
+  avgNdvi?: number;
   latestStatus: HealthStatus;
   trend: 'improving' | 'stable' | 'declining';
   readings: NDVIReading[]; // last 8 readings (bi-weekly ~16 weeks)
@@ -23,10 +33,7 @@ export interface SatelliteHealth {
   moderatePct: number;
   stressedPct: number;
   lastObservedAt: string;
-  source: 'sentinel-hub' | 'nasa-earthdata' | 'demo';
-}
-
-export interface HealthZone {
-  status: HealthStatus;
-  polygon: [number, number][]; // [lat, lng] pairs
+  fieldBoundary?: [number, number][]; // outer field boundary [lat, lng] pairs
+  healthZones?: HealthZone[]; // segmented health zones within the field
+  source: 'sentinel-hub' | 'nasa-earthdata' | 'live' | 'demo';
 }
