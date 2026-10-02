@@ -37,17 +37,22 @@ interface RawYieldOutput {
 }
 
 export class MLServiceAdapter implements IYieldService {
-  private baseUrl: string;
+  private explicitBaseUrl?: string;
 
   constructor(baseUrl?: string) {
-    this.baseUrl = (baseUrl ?? process.env.ML_SERVICE_URL ?? DEFAULT_ML_SERVICE_URL).replace(/\/+$/, '');
+    this.explicitBaseUrl = baseUrl;
+  }
+
+  private getBaseUrl(): string {
+    return (this.explicitBaseUrl ?? process.env.ML_SERVICE_URL ?? DEFAULT_ML_SERVICE_URL).replace(/\/+$/, '');
   }
 
   async checkHealth(): Promise<boolean> {
     try {
-      if (!this.baseUrl) return false;
+      const baseUrl = this.getBaseUrl();
+      if (!baseUrl) return false;
       const signal = typeof AbortSignal?.timeout === 'function' ? AbortSignal.timeout(2000) : undefined;
-      const res = await fetch(`${this.baseUrl}/health`, { signal });
+      const res = await fetch(`${baseUrl}/health`, { signal });
       if (!res.ok) return false;
       const data = await res.json() as { status?: string };
       return data.status === 'ok';
@@ -57,7 +62,8 @@ export class MLServiceAdapter implements IYieldService {
   }
 
   async predictYield(input: YieldModelInputV1): Promise<YieldPrediction> {
-    if (!this.baseUrl) {
+    const baseUrl = this.getBaseUrl();
+    if (!baseUrl) {
       throw new Error('ML_SERVICE_URL is not configured');
     }
 
@@ -84,7 +90,7 @@ export class MLServiceAdapter implements IYieldService {
 
     const signal = typeof AbortSignal?.timeout === 'function' ? AbortSignal.timeout(REQUEST_TIMEOUT_MS) : undefined;
 
-    const res = await fetch(`${this.baseUrl}/predict/yield`, {
+    const res = await fetch(`${baseUrl}/predict/yield`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
