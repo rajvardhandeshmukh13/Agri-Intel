@@ -33,6 +33,25 @@ function MapController({ center, bounds }: { center: [number, number]; bounds?: 
   const map = useMap();
 
   useEffect(() => {
+    map.invalidateSize();
+    const t1 = setTimeout(() => map.invalidateSize(), 120);
+    const t2 = setTimeout(() => map.invalidateSize(), 350);
+
+    const onResize = () => {
+      map.invalidateSize();
+    };
+    window.addEventListener('resize', onResize);
+    window.addEventListener('orientationchange', onResize);
+
+    return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+      window.removeEventListener('resize', onResize);
+      window.removeEventListener('orientationchange', onResize);
+    };
+  }, [map]);
+
+  useEffect(() => {
     if (bounds && bounds.length >= 3) {
       try {
         const leafletBounds = L.latLngBounds(bounds.map(([lat, lng]) => [lat, lng]));
@@ -43,6 +62,7 @@ function MapController({ center, bounds }: { center: [number, number]; bounds?: 
     } else {
       map.setView(center, 15);
     }
+    map.invalidateSize();
   }, [map, center, bounds]);
 
   return null;
@@ -133,12 +153,17 @@ export default function FieldMap({
         {mapType === 'satellite' ? (
           <TileLayer
             url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
-            maxZoom={18}
+            maxNativeZoom={18}
+            maxZoom={19}
+            crossOrigin="anonymous"
+            keepBuffer={4}
           />
         ) : (
           <TileLayer
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            maxZoom={18}
+            maxZoom={19}
+            crossOrigin="anonymous"
+            keepBuffer={4}
           />
         )}
 

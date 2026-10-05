@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import { ClientProviders } from '@/components/providers/ClientProviders';
+import 'leaflet/dist/leaflet.css';
 import './globals.css';
 
 export const metadata: Metadata = {
