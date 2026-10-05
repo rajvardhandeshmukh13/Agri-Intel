@@ -11,7 +11,7 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils/cn';
 import { useTranslation } from '@/lib/i18n/context';
 import { useAuth } from '@/lib/auth/context';
-import { saveStoredFarm, DISTRICT_COORDINATES } from '@/lib/utils/farm-storage';
+import { saveStoredFarm, DISTRICT_COORDINATES, CROP_INPUT_COSTS, formatCropName } from '@/lib/utils/farm-storage';
 import { generateBoxPolygon } from '@/lib/utils/geometry';
 import type { CropName, SoilType, IrrigationType } from '@/lib/types/farm';
 
@@ -43,6 +43,7 @@ interface OnboardingState {
 
 const CROPS: { id: CropName; label: string; labelMr: string; labelHi: string; icon: string }[] = [
   { id: 'soybean', label: 'Soybean', labelMr: 'सोयाबीन', labelHi: 'सोयाबीन', icon: '🌿' },
+  { id: 'sugarcane', label: 'Sugarcane', labelMr: 'ऊस', labelHi: 'गन्ना', icon: '🎋' },
   { id: 'wheat', label: 'Wheat', labelMr: 'गहू', labelHi: 'गेहूं', icon: '🌾' },
   { id: 'cotton', label: 'Cotton', labelMr: 'कापूस', labelHi: 'कपास', icon: '🪴' },
   { id: 'onion', label: 'Onion', labelMr: 'कांदा', labelHi: 'प्याज', icon: '🧅' },
@@ -88,6 +89,10 @@ export default function OnboardingPage() {
         next.lat = coords.lat;
         next.lng = coords.lng;
         next.fieldGeoJson = generateBoxPolygon(coords.lat, coords.lng);
+      }
+      // When crop updates, sync default input costs
+      if (field === 'crop' && typeof value === 'string' && CROP_INPUT_COSTS[value]) {
+        next.inputCostPerHa = String(CROP_INPUT_COSTS[value]);
       }
       return next;
     });
@@ -371,7 +376,7 @@ export default function OnboardingPage() {
             <CardContent className="p-4 space-y-3 text-xs">
               <div className="flex justify-between border-b border-border/50 pb-2">
                 <span className="text-muted-foreground">Crop</span>
-                <span className="font-semibold capitalize">{form.crop}</span>
+                <span className="font-semibold">{formatCropName(form.crop, locale)}</span>
               </div>
               <div className="flex justify-between border-b border-border/50 pb-2">
                 <span className="text-muted-foreground">Location</span>

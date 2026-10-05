@@ -85,6 +85,7 @@ const CROP_TRANSLATIONS: Record<string, { mr: string; hi: string; en: string }> 
   onion: { mr: 'कांदा', hi: 'प्याज', en: 'Onion' },
   tur: { mr: 'तूर', hi: 'अरहर (तूर)', en: 'Tur' },
   jowar: { mr: 'ज्वारी', hi: 'ज्वार', en: 'Jowar' },
+  sugarcane: { mr: 'ऊस', hi: 'गन्ना', en: 'Sugarcane' },
 };
 
 const MANDI_NAMES: Record<string, { mr: string; hi: string; en: string }> = {

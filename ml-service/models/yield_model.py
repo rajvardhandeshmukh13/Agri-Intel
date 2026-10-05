@@ -29,12 +29,13 @@ CROP_BASELINES = {
     "onion":   {"kharif": 80.0, "rabi": 120.0},
     "tur":     {"kharif": 10.0, "rabi": 0},
     "jowar":   {"kharif": 15.0, "rabi": 18.0},
+    "sugarcane": {"kharif": 750.0, "rabi": 850.0},
 }
 
 SOIL_FACTORS = {"black": 1.05, "alluvial": 1.03, "loamy": 1.02, "red": 0.98, "sandy": 0.92}
 IRRIGATION_FACTORS = {"irrigated": 1.15, "partial": 1.05, "rainfed": 1.0}
 
-OPTIMAL_RAINFALL = {"soybean": 600, "wheat": 400, "cotton": 500}
+OPTIMAL_RAINFALL = {"soybean": 600, "wheat": 400, "cotton": 500, "onion": 500, "tur": 650, "jowar": 450, "sugarcane": 1500}
 
 
 def _rule_based_predict(inp: YieldInputV1) -> tuple[float, list[ExplanationFactor]]:

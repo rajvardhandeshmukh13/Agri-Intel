@@ -13,19 +13,20 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import r2_score, mean_absolute_error
 
-CROPS = ["soybean", "cotton", "wheat", "onion", "tur", "jowar"]
+CROPS = ["soybean", "cotton", "wheat", "onion", "tur", "jowar", "sugarcane"]
 SEASONS = ["kharif", "rabi"]
 SOILS = ["black", "alluvial", "loamy", "red", "sandy"]
 IRRIGATIONS = ["rainfed", "irrigated", "partial"]
 
 # Agronomic baselines (qtl/ha) in Maharashtra
 CROP_BASELINES = {
-    "soybean": {"baseline": 18.5, "opt_rain": 620, "opt_temp": 28.0, "rabi": False},
-    "cotton":  {"baseline": 14.0, "opt_rain": 550, "opt_temp": 30.0, "rabi": False},
-    "wheat":   {"baseline": 30.0, "opt_rain": 380, "opt_temp": 22.0, "rabi": True},
-    "onion":   {"baseline": 110.0, "opt_rain": 450, "opt_temp": 25.0, "rabi": True},
-    "tur":     {"baseline": 11.5, "opt_rain": 580, "opt_temp": 29.0, "rabi": False},
-    "jowar":   {"baseline": 16.0, "opt_rain": 480, "opt_temp": 28.5, "rabi": True},
+    "soybean":   {"baseline": 18.5,  "opt_rain": 620,  "opt_temp": 28.0, "rabi": False},
+    "cotton":    {"baseline": 14.0,  "opt_rain": 550,  "opt_temp": 30.0, "rabi": False},
+    "wheat":     {"baseline": 30.0,  "opt_rain": 380,  "opt_temp": 22.0, "rabi": True},
+    "onion":     {"baseline": 110.0, "opt_rain": 450,  "opt_temp": 25.0, "rabi": True},
+    "tur":       {"baseline": 11.5,  "opt_rain": 580,  "opt_temp": 29.0, "rabi": False},
+    "jowar":     {"baseline": 16.0,  "opt_rain": 480,  "opt_temp": 28.5, "rabi": True},
+    "sugarcane": {"baseline": 800.0, "opt_rain": 1400, "opt_temp": 30.0, "rabi": True},
 }
 
 SOIL_MULT = {"black": 1.06, "alluvial": 1.04, "loamy": 1.02, "red": 0.97, "sandy": 0.90}
