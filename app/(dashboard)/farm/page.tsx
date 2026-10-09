@@ -6,6 +6,7 @@
 
 import { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
+import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { formatQuintals, formatHectares, formatDate, formatNDVI } from '@/lib/utils/format';
@@ -271,6 +272,17 @@ export default function FarmPage() {
           {activeFarm.village ? `${activeFarm.village}, ` : ''}{activeFarm.district} · {formatHectares(activeFarm.areaHectares)}
         </p>
       </div>
+
+      <Link
+        href="/history"
+        className="flex items-center justify-between rounded-xl border border-border bg-card px-4 py-3 shadow-xs hover:bg-muted transition-colors"
+      >
+        <span className="flex items-center gap-2 text-sm font-semibold">
+          <span className="text-lg">📜</span> Farm History
+          <span className="text-xs font-normal text-muted-foreground">· past seasons, yields &amp; earnings</span>
+        </span>
+        <span className="text-primary text-sm">→</span>
+      </Link>
 
       {/* Interactive Leaflet Field Map with Health Zones */}
       <Card className="overflow-hidden border-border/80 shadow-xs">

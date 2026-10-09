@@ -167,6 +167,23 @@ export default function FieldMap({
           />
         )}
 
+        {mapType === 'satellite' && (
+          <TileLayer
+            url="https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}"
+            maxNativeZoom={18}
+            maxZoom={19}
+            zIndex={10}
+          />
+        )}
+        {mapType === 'satellite' && (
+          <TileLayer
+            url="https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Transportation/MapServer/tile/{z}/{y}/{x}"
+            maxNativeZoom={18}
+            maxZoom={19}
+            zIndex={11}
+          />
+        )}
+
         {/* Translucent Segmented Health Zones (NDVI remote sensing heatmap) */}
         {showZones &&
           healthZones.map((zone, idx) => {

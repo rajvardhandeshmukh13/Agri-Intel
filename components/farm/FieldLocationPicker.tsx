@@ -140,6 +140,48 @@ export default function FieldLocationPicker({
   const [inputLng, setInputLng] = useState(initialLng.toFixed(5));
   const [coordError, setCoordError] = useState<string | null>(null);
 
+  // Address search (village / taluka / farm address) via OpenStreetMap Nominatim
+  const [addressQuery, setAddressQuery] = useState('');
+  const [addressResults, setAddressResults] = useState<{ display_name: string; lat: string; lon: string }[]>([]);
+  const [addressSearching, setAddressSearching] = useState(false);
+  const [addressError, setAddressError] = useState<string | null>(null);
+
+  const handleAddressSearch = async () => {
+    const q = addressQuery.trim();
+    if (!q) return;
+    setAddressSearching(true);
+    setAddressError(null);
+    try {
+      const res = await fetch(
+        `https://nominatim.openstreetmap.org/search?format=jsonv2&countrycodes=in&limit=5&q=${encodeURIComponent(q)}`,
+        { headers: { 'Accept-Language': 'en' } }
+      );
+      const data = await res.json();
+      setAddressResults(Array.isArray(data) ? data : []);
+      if (!Array.isArray(data) || data.length === 0) setAddressError('No places found. Try village + district name.');
+    } catch {
+      setAddressError('Search failed. Check your internet connection.');
+    } finally {
+      setAddressSearching(false);
+    }
+  };
+
+  const handleSelectAddress = (place: { display_name: string; lat: string; lon: string }) => {
+    const lat = Number(Number(place.lat).toFixed(5));
+    const lng = Number(Number(place.lon).toFixed(5));
+    setCenter([lat, lng]);
+    setInputLat(lat.toFixed(5));
+    setInputLng(lng.toFixed(5));
+    const box = generateBoxPolygon(lat, lng);
+    setFinalPolygon(box);
+    const area = calculatePolygonAreaHectares(geoJsonToLeaflet(box));
+    setCalculatedArea(area);
+    setAddressResults([]);
+    setAddressQuery(place.display_name.split(',')[0] ?? place.display_name);
+    setStatusMsg(`📍 Moved to ${place.display_name.split(',').slice(0, 2).join(',')}. Now tap the map or drag the pin onto your exact field.`);
+    onLocationChange({ lat, lng, polygon: box, areaHectares: area });
+  };
+
   const markerIcon = useMemo(() => {
     return L.divIcon({
       className: 'agriintel-center-pin',
@@ -363,6 +405,53 @@ export default function FieldLocationPicker({
 
   return (
     <div className={`space-y-3 ${className}`}>
+      {/* Step 1: Address search for easier navigation */}
+      <div className="bg-card border border-border p-3 rounded-xl shadow-sm space-y-2">
+        <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+          Step 1 · Search your village or farm address
+        </p>
+        <div className="flex gap-2">
+          <input
+            type="text"
+            value={addressQuery}
+            onChange={(e) => setAddressQuery(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                handleAddressSearch();
+              }
+            }}
+            placeholder="e.g. Ausa, Latur"
+            className="flex-1 text-xs px-3 py-2 rounded-lg border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary/40"
+          />
+          <button
+            type="button"
+            onClick={handleAddressSearch}
+            disabled={addressSearching}
+            className="text-xs px-3 py-2 rounded-lg bg-primary text-primary-foreground font-semibold disabled:opacity-60 cursor-pointer"
+          >
+            {addressSearching ? '…' : '🔍 Search'}
+          </button>
+        </div>
+        {addressError && <p className="text-[11px] text-red-600">{addressError}</p>}
+        {addressResults.length > 0 && (
+          <ul className="divide-y divide-border rounded-lg border border-border bg-background">
+            {addressResults.map((r) => (
+              <li key={`${r.lat}-${r.lon}`}>
+                <button
+                  type="button"
+                  onClick={() => handleSelectAddress(r)}
+                  className="w-full text-left text-xs px-3 py-2 hover:bg-muted cursor-pointer"
+                >
+                  📍 {r.display_name}
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
+        <p className="text-[10px] text-muted-foreground">Step 2 · Then tap the map, drag the pin, or draw your field boundary.</p>
+      </div>
+
       {/* Map Action Bar */}
       <div className="flex flex-wrap items-center gap-2">
         <button
@@ -530,6 +619,22 @@ export default function FieldLocationPicker({
               maxZoom={19}
               crossOrigin="anonymous"
               keepBuffer={4}
+            />
+          )}
+          {mapType === 'satellite' && (
+            <TileLayer
+              url="https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}"
+              maxNativeZoom={18}
+              maxZoom={19}
+              zIndex={10}
+            />
+          )}
+          {mapType === 'satellite' && (
+            <TileLayer
+              url="https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Transportation/MapServer/tile/{z}/{y}/{x}"
+              maxNativeZoom={18}
+              maxZoom={19}
+              zIndex={11}
             />
           )}
           <MapCenterController center={center} />

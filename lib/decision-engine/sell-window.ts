@@ -11,6 +11,26 @@ import { analyzeMarket } from './market-analyzer';
 import { calculateProfit, estimateTransportCostPerQtl } from './profit-calculator';
 import type { MarketRecord } from '@/lib/types/market';
 
+const OPERATIONAL_LEAD_DAYS: Record<string, number> = {
+  soybean: 6,
+  wheat: 5,
+  cotton: 4,
+  onion: 3,
+  tur: 5,
+  jowar: 4,
+  sugarcane: 2,
+};
+
+function addDays(date: Date, days: number): Date {
+  const result = new Date(date);
+  result.setDate(result.getDate() + days);
+  return result;
+}
+
+function isoDate(date: Date): string {
+  return date.toISOString().slice(0, 10);
+}
+
 export interface SellWindowInput {
   farmSeasonId: string;
   yieldPrediction: YieldPrediction;
@@ -140,6 +160,11 @@ export function computeSellRecommendation(input: SellWindowInput): SellRecommend
   const totalHarvestQ = yieldPrediction.totalHarvestQ;
   const transportCostPerQtl = estimateTransportCostPerQtl(bestMandi.mandi.distanceKm);
 
+  // A market signal is not an instruction to sell immediately. Farmers need time
+  // to cut/harvest, dry/collect, arrange transport and reach the mandi.
+  const baseOperationalLeadDays = OPERATIONAL_LEAD_DAYS[commodity.toLowerCase()] ?? 5;
+
+
   const weatherRiskNow = assessWeatherRisk(weatherForecast, 3);
   const weatherRisk7d = assessWeatherRisk(weatherForecast, 7);
   const weatherRisk14d = assessWeatherRisk(weatherForecast, 14);
@@ -168,6 +193,11 @@ export function computeSellRecommendation(input: SellWindowInput): SellRecommend
     });
     const priceRiskPct = priceRiskFromVolatility(signals.volatilityPct, daysAhead);
     const riskLevel = deriveRiskLevel(weatherRisk, priceRiskPct, daysAhead);
+    const weatherBuffer = weatherRisk === 'high' ? 2 : weatherRisk === 'moderate' ? 1 : 0;
+    const operationalLeadDays = baseOperationalLeadDays + weatherBuffer;
+    const daysUntilSelling = Math.max(daysAhead, operationalLeadDays);
+    const sellingStart = addDays(new Date(), daysUntilSelling);
+    const sellingEnd = addDays(sellingStart, 4); 
 
     const partialScenario: Omit<Scenario, 'confidence'> = {
       window,
@@ -182,6 +212,9 @@ export function computeSellRecommendation(input: SellWindowInput): SellRecommend
       riskLevel,
       weatherRisk,
       priceRiskPct,
+      earliestSellingDate: isoDate(sellingStart),
+      sellingWindowEndDate: isoDate(sellingEnd),
+      operationalLeadDays,
     };
 
     return { ...partialScenario, confidence: deriveConfidence(partialScenario) };
@@ -213,5 +246,8 @@ export function computeSellRecommendation(input: SellWindowInput): SellRecommend
     reasons,
     scenarios: [scenarioNow, scenario7d, scenario14d],
     source: 'decision-engine',
+    operationalLeadDays: bestScenario.operationalLeadDays,
+    recommendedSellingStartDate: bestScenario.earliestSellingDate,
+    recommendedSellingEndDate: bestScenario.sellingWindowEndDate,
   };
 }

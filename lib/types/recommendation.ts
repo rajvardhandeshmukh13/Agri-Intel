@@ -19,6 +19,9 @@ export interface Scenario {
   confidence: ConfidenceLevel;
   weatherRisk: RiskLevel;
   priceRiskPct: number; // percentage price could drop
+  earliestSellingDate?: string;
+  sellingWindowEndDate?: string;
+  operationalLeadDays?: number;
 }
 
 export interface SellRecommendation {
@@ -38,6 +41,9 @@ export interface SellRecommendation {
   yieldConfidenceLow?: number;
   yieldConfidenceHigh?: number;
   yieldExplanation?: import('./yield').YieldExplanationFactor[];
+  operationalLeadDays?: number;
+  recommendedSellingStartDate?: string;
+  recommendedSellingEndDate?: string;
 }
 
 export interface ProfitSimulatorInput {

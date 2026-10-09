@@ -20,6 +20,42 @@ import { useTranslation, type AppLocale } from '@/lib/i18n/context';
 import { localizeReason } from '@/lib/utils/format-reason';
 import type { SellRecommendation, SellWindow, Scenario } from '@/lib/types/recommendation';
 
+function addDays(date: Date, days: number): Date {
+  const next = new Date(date);
+  next.setDate(next.getDate() + days);
+  return next;
+}
+
+function isoDate(date: Date): string {
+  return date.toISOString().slice(0, 10);
+}
+
+function formatSellingDate(value: string | undefined, locale: AppLocale): string {
+  if (!value) return '';
+  const date = new Date(`${value}T12:00:00`);
+  return new Intl.DateTimeFormat(locale === 'mr' ? 'mr-IN' : locale === 'hi' ? 'hi-IN' : 'en-IN', {
+    day: 'numeric',
+    month: 'short',
+  }).format(date);
+}
+
+function buildOperationalPlan(scenario: Scenario) {
+  const lead = scenario.operationalLeadDays ?? 6;
+  const harvestDays = Math.min(3, Math.max(2, Math.round(lead * 0.5)));
+  const handlingDays = Math.max(1, lead - harvestDays - 1);
+  const transportDays = 1;
+  const start = scenario.earliestSellingDate ? new Date(`${scenario.earliestSellingDate}T12:00:00`) : addDays(new Date(), lead);
+  const end = scenario.sellingWindowEndDate ? new Date(`${scenario.sellingWindowEndDate}T12:00:00`) : addDays(start, 4);
+  return {
+    lead,
+    harvestDays,
+    handlingDays,
+    transportDays,
+    start: isoDate(start),
+    end: isoDate(end),
+  };
+}
+
 function RiskBadge({ level, locale }: { level: string; locale: AppLocale }) {
   const map = {
     low: 'bg-emerald-100 text-emerald-700 border-emerald-300',
@@ -122,6 +158,9 @@ function buildFallbackRecommendation(farm: ActiveFarmContext): SellRecommendatio
       confidence: 'high',
       weatherRisk: 'low',
       priceRiskPct: 2.1,
+      earliestSellingDate: isoDate(addDays(new Date(), 6)),
+      sellingWindowEndDate: isoDate(addDays(new Date(), 10)),
+      operationalLeadDays: 6,
     },
     {
       window: '7_days',
@@ -137,6 +176,9 @@ function buildFallbackRecommendation(farm: ActiveFarmContext): SellRecommendatio
       confidence: 'high',
       weatherRisk: 'low',
       priceRiskPct: 4.5,
+      earliestSellingDate: isoDate(addDays(new Date(), 7)),
+      sellingWindowEndDate: isoDate(addDays(new Date(), 11)),
+      operationalLeadDays: 6,
     },
     {
       window: '14_days',
@@ -152,6 +194,9 @@ function buildFallbackRecommendation(farm: ActiveFarmContext): SellRecommendatio
       confidence: 'moderate',
       weatherRisk: 'low',
       priceRiskPct: 7.2,
+      earliestSellingDate: isoDate(addDays(new Date(), 14)),
+      sellingWindowEndDate: isoDate(addDays(new Date(), 18)),
+      operationalLeadDays: 6,
     },
   ];
 
@@ -172,6 +217,9 @@ function buildFallbackRecommendation(farm: ActiveFarmContext): SellRecommendatio
     ],
     scenarios,
     source: 'demo' as const,
+    operationalLeadDays: 6,
+    recommendedSellingStartDate: scenarios[0].earliestSellingDate,
+    recommendedSellingEndDate: scenarios[0].sellingWindowEndDate,
   };
 }
 
@@ -332,9 +380,12 @@ export default function SellPage() {
   const currentCrop = farmContext?.crop || 'soybean';
   const cropLabel = formatCropName(currentCrop, locale);
   const seasonLabel = farmContext?.season ?? 'Kharif 2024';
+  const recommendedScenario = scenarios.find((s) => s.window === recommendedWindow) ?? scenarios[0]!;
+  const operationalPlan = buildOperationalPlan(selectedScenario);
+  const recommendedPlan = buildOperationalPlan(recommendedScenario);
 
   const windowLabel = (window: string) => {
-    if (window === 'now') return t('sell.sellNow');
+    if (window === 'now') return operationalPlan.lead > 0 ? `Sell after ~${operationalPlan.lead} days` : t('sell.sellNow');
     if (window === '7_days') return t('sell.wait7');
     return t('sell.wait14');
   };
@@ -366,6 +417,24 @@ export default function SellPage() {
               <p className="text-sm text-muted-foreground mt-0.5">
                 {t('sell.suggestedMandi')}: <span className="font-semibold text-foreground">{suggestedMandi}</span>
               </p>
+              <div className="mt-3 rounded-xl border border-primary/20 bg-background/80 p-3">
+                <div className="flex items-center justify-between gap-2">
+                  <div>
+                    <p className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">Selling window</p>
+                    <p className="text-base font-bold text-primary">
+                      {formatSellingDate(recommendation.recommendedSellingStartDate ?? recommendedScenario.earliestSellingDate, locale)}
+                      {' – '}
+                      {formatSellingDate(recommendation.recommendedSellingEndDate ?? recommendedScenario.sellingWindowEndDate, locale)}
+                    </p>
+                  </div>
+                  <span className="rounded-full bg-amber-100 px-2 py-1 text-[10px] font-semibold text-amber-800">
+                    {recommendedPlan.lead} days to prepare
+                  </span>
+                </div>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  The market signal is for planning today. Harvest, drying/collection and transport happen before the recommended sale date.
+                </p>
+              </div>
               <div className="flex flex-wrap items-center gap-2 mt-2">
                 <RiskBadge level={riskLevel} locale={locale} />
                 <ConfidenceBadge level={confidence} locale={locale} />
@@ -377,6 +446,40 @@ export default function SellPage() {
               </div>
             </div>
           </div>
+        </CardContent>
+      </Card>
+
+      {/* HARVEST-TO-SALE PLAN */}
+      <Card>
+        <CardHeader className="pb-2 pt-4">
+          <CardTitle className="text-base">🌾 Harvest-to-sale plan</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-4 gap-1 text-center">
+            <div className="rounded-lg bg-muted/60 p-2">
+              <div className="text-lg">🌾</div>
+              <p className="mt-1 text-[10px] font-semibold">Harvest</p>
+              <p className="text-[9px] text-muted-foreground">~{operationalPlan.harvestDays} days</p>
+            </div>
+            <div className="rounded-lg bg-muted/60 p-2">
+              <div className="text-lg">🧺</div>
+              <p className="mt-1 text-[10px] font-semibold">Dry / collect</p>
+              <p className="text-[9px] text-muted-foreground">~{operationalPlan.handlingDays} days</p>
+            </div>
+            <div className="rounded-lg bg-muted/60 p-2">
+              <div className="text-lg">🚜</div>
+              <p className="mt-1 text-[10px] font-semibold">Transport</p>
+              <p className="text-[9px] text-muted-foreground">~{operationalPlan.transportDays} day</p>
+            </div>
+            <div className="rounded-lg border border-primary/30 bg-primary/5 p-2">
+              <div className="text-lg">🏪</div>
+              <p className="mt-1 text-[10px] font-semibold text-primary">Sell</p>
+              <p className="text-[9px] text-muted-foreground">{formatSellingDate(recommendedPlan.start, locale)}</p>
+            </div>
+          </div>
+          <p className="mt-3 text-xs text-muted-foreground">
+            This prevents the dashboard from telling a farmer to sell immediately when the crop still needs to be harvested, prepared and transported.
+          </p>
         </CardContent>
       </Card>
 

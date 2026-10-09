@@ -14,6 +14,9 @@ import { useTranslation } from '@/lib/i18n/context';
 import { useAuth } from '@/lib/auth/context';
 import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher';
 import { getActiveFarmContext } from '@/lib/utils/farm-storage';
+import { AccountSwitcher } from '@/components/ui/AccountSwitcher';
+import AlertNotifications from '@/components/ui/AlertNotifications';
+import FarmViewHistory from '@/components/ui/FarmViewHistory';
 
 type NavKey = 'home' | 'farm' | 'market' | 'sell' | 'ask';
 
@@ -128,11 +131,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               <h1 className="text-base font-bold text-primary leading-none" style={{ fontFamily: 'Outfit, sans-serif' }}>
                 AgriIntel
               </h1>
-              <p className="text-[10px] text-muted-foreground leading-none mt-0.5">
-                {farmInfo.name} · {farmInfo.location}
-              </p>
             </div>
           </Link>
+          <AccountSwitcher fallbackName={farmInfo.name} fallbackLocation={farmInfo.location} />
         </div>
         <div className="flex items-center gap-1.5">
           <Link
@@ -144,6 +145,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             <span className="hidden sm:inline text-[11px]">{locale === 'mr' ? 'मुख्यपृष्ठ' : locale === 'hi' ? 'होम' : 'Home'}</span>
           </Link>
           <LanguageSwitcher />
+          <AlertNotifications />
+          <FarmViewHistory />
           <Link
             href="/onboarding"
             className="text-xs text-muted-foreground hover:text-primary transition-colors p-1"
