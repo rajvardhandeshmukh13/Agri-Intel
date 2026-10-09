@@ -71,3 +71,17 @@ pip install -r requirements.txt
 python train.py
 uvicorn main:app --port 8000 --reload
 ```
+
+## ML Price Forecast (decision engine)
+
+The sell-window engine uses a 7d/14d mandi price forecast (p10/p50/p90 bands) from the `ml-service` sidecar.
+
+```bash
+cd ml-service
+python train_price.py          # trains models/price_model.pkl
+uvicorn main:app --port 8000   # exposes POST /predict/price
+```
+
+- Falls back automatically to the old trend heuristic if the service is down/untrained, history is < 3 records, or demo mode is on (`recommendation.priceForecastSource` tells you which was used).
+- **The shipped model is trained on synthetic series.** To train on real history, drop an AGMARKNET export at `ml-service/data/price_history.csv` (`crop,mandi,date,modal_price,arrivals`) and rerun `train_price.py`.
+

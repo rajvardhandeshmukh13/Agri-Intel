@@ -11,6 +11,7 @@ def test_health():
     assert response.status_code == 200
     data = response.json()
     assert data["status"] == "ok"
+    assert data["model_loaded"] is True
     print("test_health: PASSED ->", data)
 
 def test_predict_yield_valid():
@@ -64,8 +65,32 @@ def test_predict_yield_invalid():
     assert response.status_code == 422 # Unprocessable Entity
     print("test_predict_yield_invalid: PASSED (correctly rejected with 422)")
 
+def test_predict_price():
+    payload = {
+        "crop": "soybean",
+        "records": [
+            {"date": f"2024-09-{d:02d}", "modal_price": 4100 + d * 6, "arrivals": 3000 - d * 10}
+            for d in range(1, 29)
+        ],
+    }
+    r = client.post("/predict/price", json=payload)
+    assert r.status_code == 200, r.text
+    data = r.json()
+    assert len(data["forecasts"]) == 2
+    for f in data["forecasts"]:
+        assert f["p10"] <= f["p50"] <= f["p90"]
+    assert data["drivers"]
+    print("test_predict_price: PASSED ->", data["forecasts"])
+
+def test_predict_price_bad_crop():
+    payload = {"crop": "banana", "records": [{"date": "2024-09-0%d" % d, "modal_price": 100} for d in range(1, 5)]}
+    assert client.post("/predict/price", json=payload).status_code == 422
+    print("test_predict_price_bad_crop: PASSED (correctly rejected with 422)")
+
 if __name__ == "__main__":
     test_health()
     test_predict_yield_valid()
     test_predict_yield_invalid()
-    print("\nALL FASTAPI PYTHON TESTS PASSED!")
+    test_predict_price()
+    test_predict_price_bad_crop()
+    print("\nALL FASTAPI PYTHON TESTS (YIELD + PRICE) PASSED!")

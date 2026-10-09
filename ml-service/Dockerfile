@@ -14,6 +14,7 @@ COPY . .
 
 # Ensure model is trained if not already present
 RUN python -c "import os; from train import train_and_save; train_and_save() if not os.path.exists('models/yield_model.pkl') else None"
+RUN python -c "import os; from train_price import train_and_save; train_and_save() if not os.path.exists('models/price_model.pkl') else None"
 
 EXPOSE 8000
 

@@ -7,6 +7,7 @@ import { computeSellRecommendation } from '@/lib/decision-engine/sell-window';
 import { fetchPriceHistory, fetchNearbyMandiComparison } from '@/lib/services/market';
 import { fetchWeatherForecast } from '@/lib/services/weather';
 import { predictYieldWithFallback } from '@/lib/services/yield';
+import { predictPriceWithFallback } from '@/lib/services/price-forecast';
 import satelliteData from '@/data/demo/satellite-health.json';
 
 import {
@@ -190,6 +191,9 @@ export async function POST(request: NextRequest) {
 
       actualYieldPrediction = yieldPrediction;
 
+      // ML price forecast (7d / 14d bands) with heuristic fallback
+      const priceForecast = await predictPriceWithFallback(ctx.commodity, marketRecords, { forceDemo });
+
       recommendation = computeSellRecommendation({
         farmSeasonId: ctx.farmSeasonId,
         yieldPrediction,
@@ -198,6 +202,7 @@ export async function POST(request: NextRequest) {
         weatherForecast: forecast,
         inputCostTotal: ctx.inputCostTotal,
         commodity: ctx.commodity,
+        priceForecast,
       });
 
       // Attach yield source and explanation factors to recommendation

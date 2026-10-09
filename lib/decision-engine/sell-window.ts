@@ -10,6 +10,7 @@ import type { WeatherForecast } from '@/lib/types/weather';
 import { analyzeMarket } from './market-analyzer';
 import { calculateProfit, estimateTransportCostPerQtl } from './profit-calculator';
 import type { MarketRecord } from '@/lib/types/market';
+import type { PriceForecast } from '@/lib/types/price-forecast';
 
 const OPERATIONAL_LEAD_DAYS: Record<string, number> = {
   soybean: 6,
@@ -39,6 +40,8 @@ export interface SellWindowInput {
   weatherForecast: WeatherForecast;
   inputCostTotal: number; // total farm input cost in INR
   commodity?: string;
+  /** Optional ML (or heuristic) price forecast. When absent the engine uses its built-in trend projection. */
+  priceForecast?: PriceForecast;
 }
 
 function assessWeatherRisk(forecast: WeatherForecast, daysAhead: number): RiskLevel {
@@ -136,6 +139,7 @@ export function computeSellRecommendation(input: SellWindowInput): SellRecommend
     weatherForecast,
     inputCostTotal,
     commodity = 'soybean',
+    priceForecast,
   } = input;
 
   const signals = analyzeMarket(marketRecords);
@@ -176,10 +180,15 @@ export function computeSellRecommendation(input: SellWindowInput): SellRecommend
     const projected7d = Math.round(baseModalPrice * (1 + weeklyRate * 0.5));
     const projected14d = Math.round(baseModalPrice * Math.pow(1 + weeklyRate * 0.5, 2));
 
+    const fc7 = priceForecast?.forecasts.find((f) => f.horizonDays === 7);
+    const fc14 = priceForecast?.forecasts.find((f) => f.horizonDays === 14);
+    // Forecasts are relative to the forecast's own current price; rescale onto the
+    // chosen mandi's price so the best-net-mandi basis is preserved.
+    const scale = priceForecast && priceForecast.currentPrice > 0 ? baseModalPrice / priceForecast.currentPrice : 1;
     const priceMap = {
       now: baseModalPrice,
-      '7_days': projected7d,
-      '14_days': projected14d,
+      '7_days': fc7 ? Math.round(fc7.p50 * scale) : projected7d,
+      '14_days': fc14 ? Math.round(fc14.p50 * scale) : projected14d,
     };
     const labelMap = { now: 'Sell Now', '7_days': 'Wait ~7 Days', '14_days': 'Wait ~14 Days' };
     const estimatedPrice = priceMap[window];
@@ -191,7 +200,11 @@ export function computeSellRecommendation(input: SellWindowInput): SellRecommend
       sellingCostPct: 0.02,
       inputCostTotal,
     });
-    const priceRiskPct = priceRiskFromVolatility(signals.volatilityPct, daysAhead);
+    // Downside risk: with a forecast use its p10 band; otherwise volatility heuristic.
+    const fcForWindow = window === '7_days' ? fc7 : window === '14_days' ? fc14 : undefined;
+    const priceRiskPct = fcForWindow && fcForWindow.p50 > 0
+      ? parseFloat(Math.min(Math.max(((fcForWindow.p50 - fcForWindow.p10) / fcForWindow.p50) * 100, 0), 25).toFixed(1))
+      : priceRiskFromVolatility(signals.volatilityPct, daysAhead);
     const riskLevel = deriveRiskLevel(weatherRisk, priceRiskPct, daysAhead);
     const weatherBuffer = weatherRisk === 'high' ? 2 : weatherRisk === 'moderate' ? 1 : 0;
     const operationalLeadDays = baseOperationalLeadDays + weatherBuffer;
@@ -246,6 +259,8 @@ export function computeSellRecommendation(input: SellWindowInput): SellRecommend
     reasons,
     scenarios: [scenarioNow, scenario7d, scenario14d],
     source: 'decision-engine',
+    priceForecastSource: priceForecast?.source,
+    priceForecastDrivers: priceForecast?.drivers,
     operationalLeadDays: bestScenario.operationalLeadDays,
     recommendedSellingStartDate: bestScenario.earliestSellingDate,
     recommendedSellingEndDate: bestScenario.sellingWindowEndDate,
